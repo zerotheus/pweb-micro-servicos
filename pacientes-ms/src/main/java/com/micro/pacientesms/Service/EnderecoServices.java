@@ -26,7 +26,8 @@ public class EnderecoServices {
     }
 
     private Optional<Endereco> enderecoJaEstaCadastrado(Endereco endereco) {
-        return enderecoRepository.findByUfAndBairroAndCidadeAndCep(null, null, null, null);
+        return enderecoRepository.findByUfAndBairroAndCidadeAndCepAndLogradouro(endereco.getUf(), endereco.getCidade(),
+                endereco.getBairro(), endereco.getCep(), endereco.getLogradouro());
     }// TODO PREENCHER CAMPOS
 
 }

@@ -1,6 +1,7 @@
 package com.micro.pacientesms.model.Campos;
 
 import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,6 +9,7 @@ import lombok.Setter;
 @Embeddable
 @Setter
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor
 public class Telefone {
 

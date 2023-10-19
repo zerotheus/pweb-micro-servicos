@@ -6,6 +6,8 @@ import com.micro.pacientesms.model.Endereco;
 
 public interface EnderecoRepository extends JpaRepository<Endereco, Long> {
 
-    Optional<Endereco> findByUfAndBairroAndCidadeAndCep(String uf, String cidade, String bairro, String Cep);
+    Optional<Endereco> findByUfAndBairroAndCidadeAndCepAndLogradouro(String uf, String cidade, String bairro,
+            String Cep,
+            String logradouro);
 
 }

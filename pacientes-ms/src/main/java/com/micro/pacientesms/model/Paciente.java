@@ -3,6 +3,8 @@ package com.micro.pacientesms.model;
 import java.time.LocalTime;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import com.micro.pacientesms.model.Campos.CPF;
 import com.micro.pacientesms.model.Campos.DadosCadastrais;
 import com.micro.pacientesms.model.Campos.Email;
 import com.micro.pacientesms.model.Campos.Telefone;
@@ -45,6 +47,10 @@ public class Paciente {
 
     public Telefone getTelefone() {
         return this.getDadosCadastrais().getTelefone();
+    }
+
+    public CPF getCPF() {
+        return this.getDadosCadastrais().getCpf();
     }
 
 }

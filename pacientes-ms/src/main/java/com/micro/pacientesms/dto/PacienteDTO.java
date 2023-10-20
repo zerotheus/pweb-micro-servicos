@@ -11,8 +11,20 @@ import lombok.ToString;
 @ToString
 public class PacienteDTO {
 
-    public PacienteDTO(Paciente paciente) {
+    private Long NumeroDePaciente;
+    private String email;
+    private String telefone;
+    private String nome;
+    private String cpf;
+    private EnderecoDto endereco;
 
+    public PacienteDTO(Paciente paciente) {
+        this.NumeroDePaciente = paciente.getId();
+        this.email = paciente.getEmail().toString();
+        this.telefone = paciente.getTelefone().toString();
+        this.nome = paciente.getNome();
+        this.cpf = paciente.getCPF().toString();
+        this.endereco = new EnderecoDto(paciente.getEndereco());
     }
 
 }

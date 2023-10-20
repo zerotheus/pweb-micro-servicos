@@ -14,6 +14,8 @@ import com.micro.pacientesms.adapter.PacienteAdapter;
 import com.micro.pacientesms.dto.PacienteDTO;
 import com.micro.pacientesms.forms.PacienteForm;
 import com.micro.pacientesms.model.Paciente;
+import com.micro.pacientesms.regras.Regra;
+import com.micro.pacientesms.regras.RegrasDePacientes;
 import com.micro.pacientesms.repository.PacienteRepository;
 
 import lombok.AllArgsConstructor;
@@ -29,6 +31,7 @@ public class PacienteServices {
     public PacienteDTO cadastraPaciente(PacienteForm pacienteForm) {
         Paciente paciente = adaptaFormularioDePaciente(pacienteForm);
         paciente.setStatus(true);
+        System.out.println(paciente);
         if (jaPossuiAlgumCadastroNoSistema(paciente)) {
             throw new ResponseStatusException(HttpStatusCode.valueOf(400), "Ja possui cadastro deste Paciente");
         }
@@ -38,7 +41,7 @@ public class PacienteServices {
     }
 
     private boolean jaPossuiAlgumCadastroNoSistema(Paciente paciente) {
-        Optional<Paciente> pacienteExistente = pacienteRepository.findById(null);// TODO trocar por cpf
+        Optional<Paciente> pacienteExistente = pacienteRepository.findByDadosCadastraisCpf(paciente.getCPF());
         if (pacienteExistente.isPresent()) {
             return true;
         }
@@ -48,22 +51,23 @@ public class PacienteServices {
     public PacienteDTO editaPaciente(Long id, PacienteForm pacienteFormComEdicoes) {
         Paciente pacienteAserEditado = encontraPaciente(id);
         try {
-            validaEdicoes(pacienteAserEditado, pacienteFormComEdicoes);// TODO escrever algumas regras novamente
+            validaEdicoes(pacienteAserEditado, pacienteFormComEdicoes);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatusCode.valueOf(400), e.toString());
         }
         Paciente pacienteComEdicoes = adaptaFormularioDePaciente(pacienteFormComEdicoes);
         pacienteAserEditado.setDadosCadastrais(pacienteComEdicoes.getDadosCadastrais());
-        pacienteAserEditado.setEndereco(pacienteComEdicoes.getEndereco());// TODO testar inputs
+        pacienteAserEditado.setEndereco(pacienteComEdicoes.getEndereco());
+        enderecoServices.cadastraEndereco(pacienteAserEditado.getEndereco());
         pacienteRepository.save(pacienteAserEditado);
         return new PacienteDTO(pacienteAserEditado);
 
     }
 
-    public ResponseEntity<PacienteDTO> encontraPacientePeloId(Long id) {
+    public PacienteDTO encontraPacientePeloId(Long id) {
         return pacienteRepository.findByIdAndStatus(id, true).map(pacienteEncontrado -> {
-            return ResponseEntity.ok().body(new PacienteDTO(pacienteEncontrado));
-        }).orElse(ResponseEntity.notFound().build());
+            return new PacienteDTO(pacienteEncontrado);
+        }).orElseThrow(() -> new ResponseStatusException(HttpStatusCode.valueOf(404), "Paciente nao encontrado"));
     }
 
     public ResponseEntity<Object> apagaPaciente(Long id) {
@@ -80,10 +84,10 @@ public class PacienteServices {
     }
 
     public void validaEdicoes(Paciente paciente, PacienteForm pacienteForm) throws Exception {
-        // final RegrasEspecificasDePaciente regras = new RegrasPaciente(paciente,
-        // pacienteForm);
-        // regras.validar();
-    }// TODO fazer regras
+        final Regra regras = new RegrasDePacientes(
+                pacienteForm, paciente);
+        regras.validar();
+    }
 
     public Paciente adaptaFormularioDePaciente(PacienteForm pacienteForm) {
         final PacienteAdapter pacienteAdapter = new PacienteAdapter(pacienteForm);

@@ -3,6 +3,7 @@ package com.micro.pacientesms.forms;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -10,7 +11,9 @@ import lombok.ToString;
 @ToString
 public class PacienteForm {
 
+    @Valid // Necessiario em composicoes
     private final DadosCadastraisForm dadosCadastrais;
+    @Valid
     private final EnderecoForm endereco;
 
     @JsonCreator

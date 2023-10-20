@@ -19,6 +19,8 @@ import com.micro.pacientesms.Service.PacienteServices;
 import com.micro.pacientesms.dto.PacienteDTO;
 import com.micro.pacientesms.forms.PacienteForm;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/Paciente")
 public class PacienteController {
@@ -26,8 +28,15 @@ public class PacienteController {
     @Autowired
     private PacienteServices pacienteServices;
 
+    // @PostMapping // @valid informa que o campo sera validado
+    // public ResponseEntity<PacienteForm> post(@Valid @RequestBody PacienteForm
+    // paciente) {
+    // System.out.println(paciente.toString());
+    // return ResponseEntity.ok().body(paciente);
+    // }
+
     @PostMapping("/Register")
-    public ResponseEntity<PacienteDTO> cadastraPaciente(@RequestBody PacienteForm paciente) {
+    public ResponseEntity<PacienteDTO> cadastraPaciente(@Valid @RequestBody PacienteForm paciente) {
         return ResponseEntity.created(null).body((pacienteServices.cadastraPaciente(paciente)));
     }
 
@@ -38,7 +47,7 @@ public class PacienteController {
 
     @GetMapping("{id}")
     public ResponseEntity<PacienteDTO> listPaciente(@PathVariable Long id) {
-        return pacienteServices.encontraPacientePeloId(id);
+        return ResponseEntity.ok().body(pacienteServices.encontraPacientePeloId(id));
     }
 
     @DeleteMapping("/Deleta/{id}")

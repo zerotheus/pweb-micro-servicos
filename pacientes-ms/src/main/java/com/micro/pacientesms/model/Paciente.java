@@ -25,8 +25,8 @@ import lombok.ToString;
 @ToString
 public class Paciente {
 
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     @Column(name = "Paciente_id")
     private Long id;
     @Embedded

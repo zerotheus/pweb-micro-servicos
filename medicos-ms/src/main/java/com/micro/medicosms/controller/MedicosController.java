@@ -28,29 +28,30 @@ public class MedicosController {
 
     @PostMapping("/Register")
     public ResponseEntity<MedicoDto> cadastraMedico(@RequestBody MedicoForm medico) {
-        return medicoServices.cadastraMedico(medico);
+        return ResponseEntity.created(null).body(new MedicoDto(medicoServices.cadastraMedico(medico)));
     }
 
     @PutMapping("/Edit/{id}")
     public ResponseEntity<MedicoDto> editaMedico(@RequestBody MedicoForm medico, @PathVariable Long id) {
         System.out.println(medico);
-        return medicoServices.editaMedico(id, medico);
+        return ResponseEntity.created(null).body(new MedicoDto(medicoServices.editaMedico(id, medico)));
     }
 
     @GetMapping("{id}")
     public ResponseEntity<MedicoDto> listMedico(@PathVariable Long id) {
-        return medicoServices.encontraUmMedico(id);
+        return ResponseEntity.ok().body(new MedicoDto(medicoServices.encontraUmMedico(id)));
     }
 
     @DeleteMapping("Delete/{id}")
     public ResponseEntity<Object> apagaMedico(@PathVariable Long id) {
-        return medicoServices.apagaMedico(id);
+        medicoServices.apagaMedico(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/list/{page}")
     public ResponseEntity<Page<MedicoDto>> listaPacientes(@PathVariable int page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "pessoa.dadosCadastrais.nome"));
-        return ResponseEntity.ok().body(medicoServices.listaMedicos(pageable));
+        return ResponseEntity.ok().body(medicoServices.listaMedicos(pageable).map(MedicoDto::new));
     }
 
 }

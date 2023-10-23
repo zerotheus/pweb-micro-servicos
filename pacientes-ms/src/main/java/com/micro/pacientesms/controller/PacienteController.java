@@ -28,13 +28,6 @@ public class PacienteController {
     @Autowired
     private PacienteServices pacienteServices;
 
-    // @PostMapping // @valid informa que o campo sera validado
-    // public ResponseEntity<PacienteForm> post(@Valid @RequestBody PacienteForm
-    // paciente) {
-    // System.out.println(paciente.toString());
-    // return ResponseEntity.ok().body(paciente);
-    // }
-
     @PostMapping("/Register")
     public ResponseEntity<PacienteDTO> cadastraPaciente(@Valid @RequestBody PacienteForm paciente) {
         return ResponseEntity.created(null).body((pacienteServices.cadastraPaciente(paciente)));

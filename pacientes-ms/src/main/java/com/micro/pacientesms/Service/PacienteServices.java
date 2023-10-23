@@ -35,9 +35,9 @@ public class PacienteServices {
         if (jaPossuiAlgumCadastroNoSistema(paciente)) {
             throw new ResponseStatusException(HttpStatusCode.valueOf(400), "Ja possui cadastro deste Paciente");
         }
-        enderecoServices.cadastraEndereco(paciente.getEndereco());// TODO testar inputs
+        enderecoServices.cadastraEndereco(paciente.getEndereco());
         pacienteRepository.save(paciente);
-        return new PacienteDTO(paciente);// TODO atribuir atributos
+        return new PacienteDTO(paciente);
     }
 
     private boolean jaPossuiAlgumCadastroNoSistema(Paciente paciente) {

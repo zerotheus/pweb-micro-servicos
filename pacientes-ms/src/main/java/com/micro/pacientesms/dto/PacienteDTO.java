@@ -16,7 +16,6 @@ public class PacienteDTO {
     private String telefone;
     private String nome;
     private String cpf;
-    private EnderecoDto endereco;
 
     public PacienteDTO(Paciente paciente) {
         this.NumeroDePaciente = paciente.getId();
@@ -24,7 +23,6 @@ public class PacienteDTO {
         this.telefone = paciente.getTelefone().toString();
         this.nome = paciente.getNome();
         this.cpf = paciente.getCPF().toString();
-        this.endereco = new EnderecoDto(paciente.getEndereco());
     }
 
 }

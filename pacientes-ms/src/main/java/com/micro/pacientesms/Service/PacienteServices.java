@@ -95,7 +95,7 @@ public class PacienteServices {
     }
 
     public Page<Paciente> listaPacientes(Pageable pageable) {
-        return pacienteRepository.findAll(pageable);
+        return pacienteRepository.findAllByStatus(true, pageable);
     }
 
     public Paciente encontraPaciente(Long id) {

@@ -12,7 +12,7 @@ import com.micro.pacientesms.model.Campos.CPF;
 @Repository
 public interface PacienteRepository extends JpaRepository<Paciente, Long> {
 
-    Optional<Paciente> findByDadosCadastraisCpf(CPF cpf);// TODO adicionar status
+    Optional<Paciente> findByDadosCadastraisCpf(CPF cpf);// TODO adicionar status em discussao se devo ou nao
 
     Optional<Paciente> findByIdAndStatus(Long id, Boolean status);
 

@@ -10,7 +10,6 @@ public class PacienteQueue {
 
     @Bean
     public Queue initQueue() {
-        // QueueBuilder q = new QueueBuilder().durable();
         return QueueBuilder.durable("Pacientes").build();
     }
 

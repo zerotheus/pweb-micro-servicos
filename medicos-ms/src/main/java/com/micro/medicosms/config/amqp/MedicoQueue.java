@@ -11,7 +11,7 @@ public class MedicoQueue {
 
         @Bean
         public Queue initQueue() {
-            return QueueBuilder.durable("Pacientes").build();
+            return QueueBuilder.durable("Medicos").build();
         }
 
     }

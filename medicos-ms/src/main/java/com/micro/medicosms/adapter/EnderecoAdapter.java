@@ -4,10 +4,10 @@ import com.micro.medicosms.form.EnderecoForm;
 import com.micro.medicosms.model.Endereco;
 
 public class EnderecoAdapter {
-    
+
     private EnderecoForm endereco;
 
-    public EnderecoAdapter(EnderecoForm endereco) {
+    EnderecoAdapter(EnderecoForm endereco) {
         this.endereco = endereco;
     }
 

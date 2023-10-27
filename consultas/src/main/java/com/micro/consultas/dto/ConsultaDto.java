@@ -23,7 +23,7 @@ public class ConsultaDto {
         this.medico = consulta.getFkMedicoId().toString();// TODO SUBSTITUIR PELO NOME DO MEDICO
         this.paciente = consulta.getFkPacienteId().toString();
         this.estado = consulta.getEstado();
-        switch (estado) {
+        switch (consulta.getEstado()) {
             case Analise:
                 descricao = "Em analise, por favor aguarde estamos confirmando disponibilidade no horario informado";
                 break;
@@ -32,6 +32,11 @@ public class ConsultaDto {
                 break;
             case Agendada:
                 descricao = "Agendada, por favor comparecer no horario e data informados";
+                break;
+            case ValidacaoDeDadosDoPacientePendente:
+                descricao = "Aguarde, enquanto validamos seus dados";
+            case AnaliseDeConfirmacaoMedicaPendente:
+                descricao = "Aguarde, enquanto avaliamos a disponibilidade do medico";
                 break;
             case Cancelada:
                 descricao = "Cancelada, Motivo: " + consulta.getMotivoDoCancelamento();

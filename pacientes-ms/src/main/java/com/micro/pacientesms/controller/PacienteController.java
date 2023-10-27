@@ -28,8 +28,6 @@ public class PacienteController {
 
     @Autowired
     private PacienteServices pacienteServices;
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
 
     @PostMapping("/Register")
     public ResponseEntity<PacienteDTO> cadastraPaciente(@Valid @RequestBody PacienteForm paciente) {
@@ -56,11 +54,6 @@ public class PacienteController {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC, "dadosCadastrais.nome"));
         return ResponseEntity.ok()
                 .body(pacienteServices.listaPacientes(pageable).map(PacienteDTO::new));
-    }
-
-    @GetMapping
-    public void testdePedido(){
-        rabbitTemplate.convertAndSend("Pacientes", 1);
     }
 
 }

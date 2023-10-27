@@ -1,5 +1,6 @@
 package com.micro.medicosms.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,5 +15,7 @@ public interface MedicoRepository extends JpaRepository<Medico, Long> {
     Optional<Medico> findByIdAndStatus(Long id, Boolean status);
 
     Page<Medico> findAllByStatus(Boolean status, Pageable pageable);
+
+    List<Medico> findAllByStatus(Boolean status);
 
 }

@@ -26,6 +26,7 @@ public class MedicoResponseHandler implements ResponseHandler {
     }
 
     private void medicoTemDisponibilidade(Consulta consulta, MensagemAMQP message) {
+        consultaService.medicoTemDisponibilidade(consulta, message.getRequiredId());
     }
 
     private void consultaEstaEmEstadoValido() {

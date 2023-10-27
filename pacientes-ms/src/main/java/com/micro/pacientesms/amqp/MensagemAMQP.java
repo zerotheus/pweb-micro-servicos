@@ -8,7 +8,7 @@ import lombok.ToString;
 @Getter
 @Setter
 public class MensagemAMQP {
-    private Long messageId;
-    private Long pacienteId;
+    private Long consultaId;
+    private Long requiredId;
     private boolean existe = false;
 }

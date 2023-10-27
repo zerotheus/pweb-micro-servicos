@@ -34,9 +34,9 @@ public class ConsultaService {
 
     public Consulta agendaConsulta(ConsultaForm consultaForm) {
         regrasDeMarcacao(consultaForm);
-        Consulta c = consultaRepository.save(adaptaConsulta(consultaForm));
-        envieMensagens(c);
-        return c;
+        Consulta consulta = consultaRepository.save(adaptaConsulta(consultaForm));
+        envieMensagens(consulta);
+        return consulta;
     }
 
     public void regrasDeMarcacao(ConsultaForm consultaForm) {

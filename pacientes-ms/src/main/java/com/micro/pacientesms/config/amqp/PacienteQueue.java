@@ -13,4 +13,9 @@ public class PacienteQueue {
         return QueueBuilder.durable("Pacientes").build();
     }
 
+    @Bean
+    public Queue initSolicitaTodosPacientesCadastrados() {
+        return QueueBuilder.durable("Liste todos pacientes").build();
+    }
+
 }

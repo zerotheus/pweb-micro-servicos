@@ -1,5 +1,6 @@
 package com.micro.medicosms.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,10 @@ public class MedicoServices {
 
     public Page<Medico> listaMedicos(Pageable pageable) {
         return medicoRepository.findAllByStatus(true, pageable);
+    }
+
+    public void listaMedicos(List<Long> list) {
+        medicoRepository.findAllByStatus(true).stream().toList().forEach(m -> list.add(m.getId()));
     }
 
     public boolean jaPossuiCadastro(Medico medico) {

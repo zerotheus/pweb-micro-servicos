@@ -7,12 +7,15 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class MedicoQueue {
-    public class PacienteQueue {
 
-        @Bean
-        public Queue initQueue() {
-            return QueueBuilder.durable("Medicos").build();
-        }
-
+    @Bean
+    public Queue initQueue() {
+        return QueueBuilder.durable("Medicos").build();
     }
+
+    @Bean
+    public Queue iniciaFilaDeListagem() {
+        return QueueBuilder.durable("Liste todos Medicos").build();
+    }
+
 }

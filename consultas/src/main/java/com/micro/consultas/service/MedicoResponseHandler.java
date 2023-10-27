@@ -12,7 +12,29 @@ public class MedicoResponseHandler implements ResponseHandler {
 
     @Override
     public void alterarEstado(Consulta consulta, MensagemAMQP message) throws Exception {
-        
+        medicoExiste(message);
+        medicoTemDisponibilidade(consulta, message);
+        consultaEstaEmEstadoValido();
+        estaAguardandoRespostaDoMedico();
+        estaEmAnalise();
+    }
+
+    private void medicoExiste(MensagemAMQP message) throws Exception {
+        if(!message.isExiste()){
+            throw new Exception("Medico nao existe nos cadastros");
+        }
+    }
+
+    private void medicoTemDisponibilidade(Consulta consulta, MensagemAMQP message) {
+    }
+
+    private void consultaEstaEmEstadoValido() {
+    }
+
+    private void estaAguardandoRespostaDoMedico() {
+    }
+
+    private void estaEmAnalise() {
     }
 
 }

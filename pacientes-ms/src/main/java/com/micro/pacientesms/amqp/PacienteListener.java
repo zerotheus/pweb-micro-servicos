@@ -20,16 +20,12 @@ public class PacienteListener {
     public void EsperaPedidos(MensagemAMQP message) {
         System.out.println(message);// TODO decidir a forma de tratar erro
         try {
-            pacienteServices.encontraPaciente(message.getPacienteId());
+            pacienteServices.encontraPaciente(message.getRequiredId());
+            message.setExiste(true);
             rabbitTemplate.convertAndSend("Pacientes Response", message);
         } catch (Exception e) {
             rabbitTemplate.convertAndSend("Pacientes Response", message);
         }
-    }
-
-    @RabbitListener(queues = "Liste todos pacientes")
-    public void EsperaSolicitacoesDeListagem() {
-        // TODO responder
     }
 
 }

@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class MutexConsultas {
 
     private Map<Long, Lock> consultasEmAnalise = new HashMap<Long, Lock>();

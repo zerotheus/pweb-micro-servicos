@@ -3,8 +3,12 @@ package com.micro.consultas.service;
 import com.micro.consultas.amqp.MensagemAMQP;
 import com.micro.consultas.model.Consulta;
 import com.micro.consultas.model.enums.Status;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class PacienteResponseHandler implements ResponseHandler {
+
+    private final ConsultaService consultaService;
 
     @Override
     public void alterarEstado(Consulta consulta, MensagemAMQP message) throws Exception {
@@ -22,6 +26,10 @@ public class PacienteResponseHandler implements ResponseHandler {
         if (response.isExiste()) {
             throw new Exception("Paciente nao existe nos cadastros");
         }
+    }
+
+    private boolean temConsultaNoDia() {
+        return false;
     }
 
     private boolean consultaEstaEmEstadoValido(Consulta consulta) {

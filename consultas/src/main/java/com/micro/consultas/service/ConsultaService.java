@@ -17,6 +17,7 @@ import com.micro.consultas.amqp.ListagemMessage;
 import com.micro.consultas.amqp.MensagemAMQP;
 import com.micro.consultas.form.ConsultaForm;
 import com.micro.consultas.model.Consulta;
+import com.micro.consultas.model.enums.Status;
 import com.micro.consultas.repository.ConsultaRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -90,6 +91,15 @@ public class ConsultaService {
         } finally {
             mutexConsultas.desbloqueia(message.getConsultaId());
         }
+    }
+
+    public boolean medicoTemDisponibilidade(Consulta consulta, Long medicoId) {
+        if (consultaRepository.medicosIndisponiveisAsMap(consulta.getHorario(), consulta.getHorario().plusHours(1))
+                .containsKey(medicoId)) {
+            consulta.setEstado(Status.Remarcar);
+            return false;
+        }
+        return true;
     }
 
     public Consulta encontraConsulta(Long id) {

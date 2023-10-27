@@ -17,19 +17,19 @@ public class PacienteListener {
     private PacienteServices pacienteServices;
 
     @RabbitListener(queues = "Pacientes")
-    public void EsperaPedidos(Long id) {
-        System.out.println("id: " + id);// TODO decidir a forma de tratar erro
+    public void EsperaPedidos(MensagemAMQP message) {
+        System.out.println(message);// TODO decidir a forma de tratar erro
         try {
-            pacienteServices.encontraPaciente(id);
-            rabbitTemplate.convertAndSend("Pacientes Response", true);
+            pacienteServices.encontraPaciente(message.getPacienteId());
+            rabbitTemplate.convertAndSend("Pacientes Response", message);
         } catch (Exception e) {
-            rabbitTemplate.convertAndSend("Pacientes Response", false);
+            rabbitTemplate.convertAndSend("Pacientes Response", message);
         }
     }
 
     @RabbitListener(queues = "Liste todos pacientes")
     public void EsperaSolicitacoesDeListagem() {
-        //TODO responder
+        // TODO responder
     }
 
 }

@@ -1,13 +1,19 @@
 package com.micro.consultas.service;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.micro.consultas.Regra.RegrasDeMarcacaoDeConsulta;
 import com.micro.consultas.adapter.ConsultaAdapter;
+import com.micro.consultas.amqp.ListagemMessage;
 import com.micro.consultas.amqp.MensagemAMQP;
 import com.micro.consultas.form.ConsultaForm;
 import com.micro.consultas.model.Consulta;
@@ -28,8 +34,9 @@ public class ConsultaService {
 
     public Consulta agendaConsulta(ConsultaForm consultaForm) {
         regrasDeMarcacao(consultaForm);
-        envieMensagens(consultaForm);
-        return consultaRepository.save(adaptaConsulta(consultaForm));
+        Consulta c = consultaRepository.save(adaptaConsulta(consultaForm));
+        envieMensagens(c);
+        return c;
     }
 
     public void regrasDeMarcacao(ConsultaForm consultaForm) {
@@ -40,17 +47,33 @@ public class ConsultaService {
         return new ConsultaAdapter(consultaForm).converte();
     }
 
-    public void envieMensagens(ConsultaForm consultaForm) {
-        enviaMensagemParaMedico(consultaForm);
-        enviaMensagemParaPaciente(consultaForm);
+    public void envieMensagens(Consulta consulta) {
+        enviaMensagemParaMedico(consulta);
+        enviaMensagemParaPaciente(consulta);
     }
 
-    private void enviaMensagemParaMedico(ConsultaForm consultaForm) {
-
+    private void enviaMensagemParaMedico(Consulta consulta) {
+        if (consulta.getFkMedicoId() != null) {
+            mensagemDeMedificoInformado(consulta);
+        }
+        rabbitTemplate.convertAndSend("Liste todos Medicos", new ListagemMessage());
     }
 
-    private void enviaMensagemParaPaciente(ConsultaForm consultaForm) {
-        rabbitTemplate.convertAndSend("Pacientes", consultaForm.getPacienteId());
+    private void mensagemDeMedificoInformado(Consulta consulta) {
+        MensagemAMQP mensagem = new MensagemAMQP();
+        mensagem.setConsultaId(consulta.getId());
+        mensagem.setRequiredId(consulta.getFkMedicoId());
+        rabbitTemplate.convertAndSend("Medicos", mensagem);
+        return;
+    }
+
+    private void enviaMensagemParaPaciente(Consulta consulta) {
+        MensagemAMQP mensagem = new MensagemAMQP();
+        mensagem.setConsultaId(consulta.getId());
+        mensagem.setRequiredId(consulta.getFkPacienteId());
+        System.out.println(consulta);
+        rabbitTemplate.convertAndSend("Pacientes",
+                mensagem);
     }
 
     public void trataResposta(ResponseHandler responseHandler, MensagemAMQP message) {
@@ -67,6 +90,32 @@ public class ConsultaService {
         } finally {
             mutexConsultas.desbloqueia(message.getConsultaId());
         }
+    }
+
+    public Consulta encontraConsulta(Long id) {
+        return consultaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "consulta nao encontrada"));
+    }
+
+    public Long aleatorizaMedico(Long consultaId, List<Long> medicos) {
+        Consulta consulta = this.encontraConsulta(consultaId);
+        HashMap<Long, Long> hash = consultaRepository.medicosIndisponiveisAsMap(consulta.getHorario(),
+                consulta.getHorario().plusHours(1));
+        removeMedicosIndisiponiveis(hash, medicos);
+        return defineMedicoDaConsulta(medicos);
+    }
+
+    private void removeMedicosIndisiponiveis(HashMap<Long, Long> hash, List<Long> medicos) {
+        for (int i = 0; i < medicos.size(); i++) {
+            if (hash.containsKey(medicos.get(i)) && hash.size() != 0) {
+                medicos.remove(i);
+            }
+        }
+    }
+
+    private Long defineMedicoDaConsulta(List<Long> medicos) {
+        Random random = new Random();
+        return medicos.get(random.nextInt(0, medicos.size()));
     }
 
 }

@@ -35,7 +35,12 @@ public class ConsultaService {
 
     public Consulta agendaConsulta(ConsultaForm consultaForm) {
         regrasDeMarcacao(consultaForm);
-        Consulta consulta = consultaRepository.save(adaptaConsulta(consultaForm));
+        Consulta consulta = adaptaConsulta(consultaForm);
+        if (this.temConsultaMarcadaNoDia(consulta, consulta.getFkPacienteId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "So é permitida a marcacao de uma consulta por dia");
+        }
+        consulta = consultaRepository.save(consulta);
         envieMensagens(consulta);
         return consulta;
     }
@@ -57,13 +62,16 @@ public class ConsultaService {
         if (consulta.getFkMedicoId() != null) {
             mensagemDeMedificoInformado(consulta);
         }
-        rabbitTemplate.convertAndSend("Liste todos Medicos", new ListagemMessage());
+        ListagemMessage listagemMessage = new ListagemMessage();
+        listagemMessage.setConsultaId(consulta.getId());
+        rabbitTemplate.convertAndSend("Liste todos Medicos", listagemMessage);
     }
 
     private void mensagemDeMedificoInformado(Consulta consulta) {
         MensagemAMQP mensagem = new MensagemAMQP();
         mensagem.setConsultaId(consulta.getId());
         mensagem.setRequiredId(consulta.getFkMedicoId());
+        mensagem.setExiste(false);
         rabbitTemplate.convertAndSend("Medicos", mensagem);
         return;
     }
@@ -72,34 +80,39 @@ public class ConsultaService {
         MensagemAMQP mensagem = new MensagemAMQP();
         mensagem.setConsultaId(consulta.getId());
         mensagem.setRequiredId(consulta.getFkPacienteId());
+        mensagem.setExiste(false);
         System.out.println(consulta);
         rabbitTemplate.convertAndSend("Pacientes",
                 mensagem);
     }
 
-    public void trataResposta(ResponseHandler responseHandler, MensagemAMQP message) {
+    public synchronized void trataResposta(ResponseHandler responseHandler, MensagemAMQP message) {
         mutexConsultas.bloqueia(message.getConsultaId());
-        Optional<Consulta> consulta = consultaRepository.findById(message.getConsultaId());
-        if (consulta.isEmpty()) {
-            return;
-        }
         try {
+            Optional<Consulta> consulta = consultaRepository.findById(message.getConsultaId());
             responseHandler.alterarEstado(consulta.get(), message);
             consultaRepository.save(consulta.get());
         } catch (Exception e) {
+            System.out.println("Catch");
             consultaRepository.deleteById(message.getConsultaId());
         } finally {
+            System.out.println("finally");
             mutexConsultas.desbloqueia(message.getConsultaId());
         }
+        // System.out.println(consulta.get());
     }
 
     public boolean medicoTemDisponibilidade(Consulta consulta, Long medicoId) {
         if (consultaRepository.medicosIndisponiveisAsMap(consulta.getHorario(), consulta.getHorario().plusHours(1))
-                .containsKey(medicoId)) {
+                .containsValue(medicoId)) {
             consulta.setEstado(Status.Remarcar);
             return false;
         }
         return true;
+    }
+
+    public boolean temConsultaMarcadaNoDia(Consulta consulta, Long pacienteId) {
+        return !consultaRepository.jaPossuiConsultaAgendada(pacienteId, consulta.getHorario().withHour(0)).isEmpty();
     }
 
     public Consulta encontraConsulta(Long id) {
@@ -107,7 +120,7 @@ public class ConsultaService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "consulta nao encontrada"));
     }
 
-    public Long aleatorizaMedico(Long consultaId, List<Long> medicos) {
+    public synchronized Long aleatorizaMedico(Long consultaId, List<Long> medicos) {
         Consulta consulta = this.encontraConsulta(consultaId);
         HashMap<Long, Long> hash = consultaRepository.medicosIndisponiveisAsMap(consulta.getHorario(),
                 consulta.getHorario().plusHours(1));

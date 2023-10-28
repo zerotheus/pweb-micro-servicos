@@ -13,6 +13,10 @@ public class PacienteResponseHandler implements ResponseHandler {
     @Override
     public void alterarEstado(Consulta consulta, MensagemAMQP message) throws Exception {
         pacienteExiste(message);
+        if (temConsultaNoDia(consulta, message)) {
+            System.out.println("tem consulta");
+            return;
+        }
         if (!consultaEstaEmEstadoValido(consulta)) {
             return;
         }
@@ -28,8 +32,8 @@ public class PacienteResponseHandler implements ResponseHandler {
         }
     }
 
-    private boolean temConsultaNoDia() {
-        return false;
+    private boolean temConsultaNoDia(Consulta consulta, MensagemAMQP message) {
+        return consultaService.temConsultaMarcadaNoDia(consulta, message.getRequiredId());
     }
 
     private boolean consultaEstaEmEstadoValido(Consulta consulta) {

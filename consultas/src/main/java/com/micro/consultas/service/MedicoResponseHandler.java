@@ -2,6 +2,7 @@ package com.micro.consultas.service;
 
 import com.micro.consultas.amqp.MensagemAMQP;
 import com.micro.consultas.model.Consulta;
+import com.micro.consultas.model.enums.Status;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,13 +15,14 @@ public class MedicoResponseHandler implements ResponseHandler {
     public void alterarEstado(Consulta consulta, MensagemAMQP message) throws Exception {
         medicoExiste(message);
         medicoTemDisponibilidade(consulta, message);
-        consultaEstaEmEstadoValido();
-        estaAguardandoRespostaDoMedico();
-        estaEmAnalise();
+        consultaEstaEmEstadoValido(consulta);
+        estaAguardandoRespostaDoMedico(consulta);
+        estaEmAnalise(consulta);
+        consulta.setFkMedicoId(message.getRequiredId());
     }
 
     private void medicoExiste(MensagemAMQP message) throws Exception {
-        if(!message.isExiste()){
+        if (!message.isExiste()) {
             throw new Exception("Medico nao existe nos cadastros");
         }
     }
@@ -29,13 +31,25 @@ public class MedicoResponseHandler implements ResponseHandler {
         consultaService.medicoTemDisponibilidade(consulta, message.getRequiredId());
     }
 
-    private void consultaEstaEmEstadoValido() {
+    private boolean consultaEstaEmEstadoValido(Consulta consulta) {
+        if (consulta.getEstado() == Status.Remarcar || consulta.getEstado() == Status.Agendada) {
+            return false;
+        }
+        return true;
     }
 
-    private void estaAguardandoRespostaDoMedico() {
+    private boolean estaAguardandoRespostaDoMedico(Consulta consulta) {
+        if (consulta.getEstado() == Status.AnaliseDeConfirmacaoMedicaPendente) {
+            consulta.setEstado(Status.Agendada);
+            return true;
+        }
+        return false;
     }
 
-    private void estaEmAnalise() {
+    private void estaEmAnalise(Consulta consulta) {
+        if (consulta.getEstado() == Status.Analise) {
+            consulta.setEstado(Status.ValidacaoDeDadosDoPacientePendente);
+        }
     }
 
 }

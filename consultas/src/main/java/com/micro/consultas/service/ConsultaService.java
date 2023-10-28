@@ -15,10 +15,12 @@ import com.micro.consultas.Regra.RegrasDeMarcacaoDeConsulta;
 import com.micro.consultas.adapter.ConsultaAdapter;
 import com.micro.consultas.amqp.ListagemMessage;
 import com.micro.consultas.amqp.MensagemAMQP;
+import com.micro.consultas.form.CancelamentoForm;
 import com.micro.consultas.form.ConsultaForm;
 import com.micro.consultas.model.Consulta;
 import com.micro.consultas.model.enums.Status;
 import com.micro.consultas.repository.ConsultaRepository;
+import com.micro.consultas.Regra.RegraDeCancelamento;
 
 import lombok.RequiredArgsConstructor;
 
@@ -141,6 +143,18 @@ public class ConsultaService {
         if (medicos.isEmpty())
             return null;
         return medicos.get(random.nextInt(0, medicos.size()));
+    }
+
+    public Consulta cancelaConsulta(CancelamentoForm cacelamento) throws Exception {
+        Consulta consultaAserCancelada = encontraConsulta(cacelamento.getConsultaId());
+        regraDeCancelamento(consultaAserCancelada);
+        consultaAserCancelada.setMotivoDoCancelamento(cacelamento.getMotivo().toString());
+        consultaAserCancelada.setEstado(Status.Cancelada);
+        return consultaRepository.save(consultaAserCancelada);
+    }
+
+    private boolean regraDeCancelamento(Consulta consulta) throws Exception {
+        return new RegraDeCancelamento(consulta).validar();
     }
 
 }

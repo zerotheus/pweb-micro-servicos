@@ -13,7 +13,8 @@ public class MedicoResponseHandler implements ResponseHandler {
 
     @Override
     public void alterarEstado(Consulta consulta, MensagemAMQP message) throws Exception {
-        medicoExiste(message);
+        if (!foiSolicitacaoAleatoria(message, consulta))
+            medicoExiste(consulta, message);
         medicoTemDisponibilidade(consulta, message);
         consultaEstaEmEstadoValido(consulta);
         estaAguardandoRespostaDoMedico(consulta);
@@ -21,7 +22,7 @@ public class MedicoResponseHandler implements ResponseHandler {
         consulta.setFkMedicoId(message.getRequiredId());
     }
 
-    private void medicoExiste(MensagemAMQP message) throws Exception {
+    private void medicoExiste(Consulta consulta, MensagemAMQP message) throws Exception {
         if (!message.isExiste()) {
             throw new Exception("Medico nao existe nos cadastros");
         }
@@ -50,6 +51,15 @@ public class MedicoResponseHandler implements ResponseHandler {
         if (consulta.getEstado() == Status.Analise) {
             consulta.setEstado(Status.ValidacaoDeDadosDoPacientePendente);
         }
+    }
+
+    private boolean foiSolicitacaoAleatoria(MensagemAMQP message, Consulta consulta) {
+        if (message.getRequiredId() == null) {
+            consulta.setEstado(Status.Remarcar);
+            consulta.setMotivoDoCancelamento("Equipe medica indisponivel, no horario solicitado");
+            return true;
+        }
+        return false;
     }
 
 }

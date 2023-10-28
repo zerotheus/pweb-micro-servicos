@@ -13,6 +13,7 @@ import lombok.ToString;
 public class ConsultaDto {
 
     private final LocalDateTime horario;
+    private final Long numeroDaSolicitacao;
     private final Status estado;
     private final String medico;
     private final String paciente;
@@ -20,9 +21,13 @@ public class ConsultaDto {
 
     public ConsultaDto(Consulta consulta) {
         this.horario = consulta.getHorario();
-        this.medico = consulta.getFkMedicoId().toString();// TODO SUBSTITUIR PELO NOME DO MEDICO
+        if (consulta.getFkMedicoId() == null)
+            this.medico = "Estamos verificando medicos disponiveis";
+        else
+            this.medico = consulta.getFkMedicoId().toString();
         this.paciente = consulta.getFkPacienteId().toString();
         this.estado = consulta.getEstado();
+        this.numeroDaSolicitacao = consulta.getId();
         switch (consulta.getEstado()) {
             case Analise:
                 descricao = "Em analise, por favor aguarde estamos confirmando disponibilidade no horario informado";

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.micro.consultas.Regra.RegrasDeMarcacaoDeConsulta;
+import com.micro.consultas.dto.ConsultaDto;
 import com.micro.consultas.form.ConsultaForm;
 import com.micro.consultas.service.ConsultaService;
 
@@ -18,10 +19,9 @@ public class ConsultaController {
     private ConsultaService consultaService;
 
     @PostMapping
-    public ConsultaForm testeDePost(@RequestBody ConsultaForm consulta) {
+    public ConsultaDto testeDePost(@RequestBody ConsultaForm consulta) {
         System.out.println(consulta);
-        System.out.println(consultaService.agendaConsulta(consulta));
-        return consulta;
+        return new ConsultaDto(consultaService.agendaConsulta(consulta));
     }
 
 }

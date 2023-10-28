@@ -28,11 +28,12 @@ public class ConsultaResponseListener {
 
     @RabbitListener(queues = "Liste todos Medicos")
     public void listagemListener(ListagemMessage listagemMessage) {
+        System.out.println(listagemMessage);
         if (listagemMessage.getSenderId() != 0) {
             return;
         }
-        System.out.println("Medicos Listou todos");
-        System.out.println(listagemMessage);
+        Long id = consultaService.aleatorizaMedico(listagemMessage.getConsultaId(), listagemMessage.getLista());
+        consultaService.trataResposta(new MedicoResponseHandler(consultaService), listagemMessage.converte(id));
     }
 
 }

@@ -30,7 +30,7 @@ public class EnderecoForm {
     private final String cep;
     @NotNull
     @NotBlank(message = "Logradouro requerido")
-    private final String logradouro;// TODO descomentar essas validacoes muito chato isso escrever endereco
+    private final String logradouro;
 
     @JsonCreator
     public EnderecoForm(Long numero, String uf, String complemento, String bairro, String cidade, String cep,

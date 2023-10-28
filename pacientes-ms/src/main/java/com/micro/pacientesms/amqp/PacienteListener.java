@@ -18,10 +18,12 @@ public class PacienteListener {
 
     @RabbitListener(queues = "Pacientes")
     public void EsperaPedidos(MensagemAMQP message) {
-        System.out.println(message);// TODO decidir a forma de tratar erro
+        System.out.println(message);
         try {
             pacienteServices.encontraPaciente(message.getRequiredId());
+            System.out.println(pacienteServices.encontraPaciente(message.getRequiredId()));
             message.setExiste(true);
+            System.out.println("output =" + message);
             rabbitTemplate.convertAndSend("Pacientes Response", message);
         } catch (Exception e) {
             rabbitTemplate.convertAndSend("Pacientes Response", message);

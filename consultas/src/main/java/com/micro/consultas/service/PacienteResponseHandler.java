@@ -27,7 +27,7 @@ public class PacienteResponseHandler implements ResponseHandler {
     }
 
     public void pacienteExiste(MensagemAMQP response) throws Exception {
-        if (response.isExiste()) {
+        if (!response.isExiste()) {
             throw new Exception("Paciente nao existe nos cadastros");
         }
     }

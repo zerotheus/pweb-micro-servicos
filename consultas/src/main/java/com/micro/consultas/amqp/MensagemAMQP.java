@@ -14,5 +14,5 @@ import lombok.ToString;
 public class MensagemAMQP {
     private Long consultaId;
     private Long requiredId;
-    private boolean existe = false;
+    private boolean existe;
 }

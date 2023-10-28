@@ -39,7 +39,7 @@ public class ConsultaService {
         if (this.temConsultaMarcadaNoDia(consulta, consulta.getFkPacienteId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "So é permitida a marcacao de uma consulta por dia");
-        }
+        } // TODO devo fazer isso?
         consulta = consultaRepository.save(consulta);
         envieMensagens(consulta);
         return consulta;
@@ -61,6 +61,7 @@ public class ConsultaService {
     private void enviaMensagemParaMedico(Consulta consulta) {
         if (consulta.getFkMedicoId() != null) {
             mensagemDeMedificoInformado(consulta);
+            return;
         }
         ListagemMessage listagemMessage = new ListagemMessage();
         listagemMessage.setConsultaId(consulta.getId());
@@ -93,13 +94,12 @@ public class ConsultaService {
             responseHandler.alterarEstado(consulta.get(), message);
             consultaRepository.save(consulta.get());
         } catch (Exception e) {
+            System.out.println(e.toString());
             System.out.println("Catch");
             consultaRepository.deleteById(message.getConsultaId());
         } finally {
-            System.out.println("finally");
             mutexConsultas.desbloqueia(message.getConsultaId());
         }
-        // System.out.println(consulta.get());
     }
 
     public boolean medicoTemDisponibilidade(Consulta consulta, Long medicoId) {
@@ -138,6 +138,8 @@ public class ConsultaService {
 
     private Long defineMedicoDaConsulta(List<Long> medicos) {
         Random random = new Random();
+        if (medicos.isEmpty())
+            return null;
         return medicos.get(random.nextInt(0, medicos.size()));
     }
 

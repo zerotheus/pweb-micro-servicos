@@ -26,4 +26,11 @@ public class ListagemMessage {
         }
     }
 
+    public MensagemAMQP converte(Long medicoSelecionadoId) {
+        if (lista.isEmpty()) {
+            return new MensagemAMQP(consultaId, medicoSelecionadoId, false);
+        }
+        return new MensagemAMQP(consultaId,medicoSelecionadoId,true);
+    }
+
 }

@@ -29,8 +29,13 @@ public class MedicosListener {
 
     @RabbitListener(queues = "Liste todos Medicos")
     public void EsperaSolicitacoesDeListagem(ListagemMessage listagem) {
+        if (listagem.getSenderId() == 0) {
+            return;
+        }
         listagem.setSenderId(0);
         medicoServices.listaMedicos(listagem.getLista());
+        System.out.println(listagem);
+        rabbitTemplate.convertAndSend("Liste todos Medicos", listagem);
     }
 
 }

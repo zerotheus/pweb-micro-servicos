@@ -40,7 +40,7 @@ public class ConsultaService {
         Consulta consulta = adaptaConsulta(consultaForm);
         if (this.temConsultaMarcadaNoDia(consulta, consulta.getFkPacienteId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "So é permitida a marcacao de uma consulta por dia");
+                    "So é permitida a marcação de uma consulta por dia");
         } // TODO devo fazer isso?
         consulta = consultaRepository.save(consulta);
         envieMensagens(consulta);
@@ -137,6 +137,7 @@ public class ConsultaService {
                 medicos.remove(i);
             }
         }
+        hash.toString();
     }
 
     private Long defineMedicoDaConsulta(List<Long> medicos) {

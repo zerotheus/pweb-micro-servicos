@@ -19,7 +19,7 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Long> {
                         + " and estado != 'AnaliseDeConfirmacaoMedicaPendente' and estado != 'Remarcar'")
         public List<Consulta> jaPossuiConsultaAgendada(@Param(value = "id") Long id, LocalDateTime diaMarcado);
 
-        @Query(nativeQuery = true, value = "SELECT DISTINCT fk_medico_id FROM consultas WHERE horario >= :horaMarcada AND horario < :termino"
+        @Query(nativeQuery = true, value = "SELECT DISTINCT fk_medico_id FROM consultas WHERE horario > :horaMarcada AND horario < :termino"
                         + " and estado = 'Agendada'")
         public List<Long> medicosIndisponiveis(@Param("horaMarcada") LocalDateTime horaMarcada,
                         @Param("termino") LocalDateTime termino);

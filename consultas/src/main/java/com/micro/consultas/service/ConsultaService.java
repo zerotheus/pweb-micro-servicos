@@ -40,7 +40,7 @@ public class ConsultaService {
         Consulta consulta = adaptaConsulta(consultaForm);
         if (this.temConsultaMarcadaNoDia(consulta, consulta.getFkPacienteId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "So é permitida a marcacao de uma consulta por dia");
+                    "So é permitida a marcação de uma consulta por dia");
         } // TODO devo fazer isso?
         consulta = consultaRepository.save(consulta);
         envieMensagens(consulta);
@@ -105,7 +105,8 @@ public class ConsultaService {
     }
 
     public boolean medicoTemDisponibilidade(Consulta consulta, Long medicoId) {
-        if (consultaRepository.medicosIndisponiveisAsMap(consulta.getHorario(), consulta.getHorario().plusHours(1))
+        if (consultaRepository
+                .medicosIndisponiveisAsMap(consulta.getHorario().minusHours(1), consulta.getHorario().plusHours(1))
                 .containsValue(medicoId)) {
             consulta.setEstado(Status.Remarcar);
             return false;
@@ -124,7 +125,7 @@ public class ConsultaService {
 
     public synchronized Long aleatorizaMedico(Long consultaId, List<Long> medicos) {
         Consulta consulta = this.encontraConsulta(consultaId);
-        HashMap<Long, Long> hash = consultaRepository.medicosIndisponiveisAsMap(consulta.getHorario(),
+        HashMap<Long, Long> hash = consultaRepository.medicosIndisponiveisAsMap(consulta.getHorario().minusHours(1),
                 consulta.getHorario().plusHours(1));
         removeMedicosIndisiponiveis(hash, medicos);
         return defineMedicoDaConsulta(medicos);
@@ -136,6 +137,7 @@ public class ConsultaService {
                 medicos.remove(i);
             }
         }
+        hash.toString();
     }
 
     private Long defineMedicoDaConsulta(List<Long> medicos) {

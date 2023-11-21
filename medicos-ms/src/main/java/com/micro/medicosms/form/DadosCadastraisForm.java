@@ -22,6 +22,7 @@ public class DadosCadastraisForm {
     @Pattern(message = "Telefone tem somente numeros", regexp = "^[0-9]+$")
     private final String telefone;
     @NotBlank(message = "Nome requerido")
+    @Pattern(message = "Não inserir numeros",regexp ="[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$")
     @Size(min = 3)
     private final String nome;
     @NotNull(message = "CRM requirido")

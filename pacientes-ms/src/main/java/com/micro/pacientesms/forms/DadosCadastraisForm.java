@@ -1,5 +1,7 @@
 package com.micro.pacientesms.forms;
 
+import org.hibernate.validator.constraints.br.CPF;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -19,9 +21,10 @@ public class DadosCadastraisForm {
     @Pattern(message = "Telefone tem somente numeros", regexp = "^[0-9]+$")
     private final String telefone;
     @NotBlank(message = "Nome requerido")
+    @Pattern(message = "Não inserir numeros",regexp ="[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$")
     @Size(min = 3)
     private final String nome;
-    // @CPF TODO descomentar validacao muito chato ficar pegando cpf valido
+    @CPF
     private final String cpf;
 
     @JsonCreator

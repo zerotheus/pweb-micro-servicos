@@ -7,6 +7,8 @@ import java.util.Random;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -157,6 +159,10 @@ public class ConsultaService {
 
     private boolean regraDeCancelamento(Consulta consulta) throws Exception {
         return new RegraDeCancelamento(consulta).validar();
+    }
+
+    public Page<Consulta> listarConsultas(Pageable pageable){
+        return consultaRepository.findAll(pageable);
     }
 
 }
